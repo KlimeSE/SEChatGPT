@@ -16,7 +16,7 @@
   <Description>ChatGPT integration for Space Engineers. Voice and Text interaction with ChatGPT</Description>
   
   <!-- The commit id. You can find this in the commits list: https://github.com/austinvaness/ToolSwitcherPlugin/commits/main -->
-  <Commit>eeca2869224bb99a34542c5e40b5ac6912b08cbc</Commit>
+  <Commit>11ee541ec4e85c9a9eebb6cf3b7582a307fc8d27</Commit>
   
   <!-- To specify a required NuGet package, use either a list of PackageReference tags OR a Config tag.
   <NuGetReferences>
