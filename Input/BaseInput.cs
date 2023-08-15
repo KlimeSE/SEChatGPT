@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SEChatGPT.Handlers
 {
-    internal class BaseHandler
+    internal class BaseInput
     {
     }
 }
