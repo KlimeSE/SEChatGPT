@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Sandbox.Game.VoiceChat;
+using SEChatGPT.Config;
 using SpaceEngineers.Game.VoiceChat;
 using System;
 using System.Reflection;
@@ -7,13 +8,16 @@ using VRage.Plugins;
 
 namespace SEChatGPT
 {
-    public class SEChatGPTVoiceHook : IPlugin
+    public class SEChatGPTPlugin : IPlugin
     {
-        Harmony harmony = new Harmony("SEChatGPT");
-
         public void Init(object gameInstance)
         {
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            RunSetup();
+        }
+
+        public void OpenConfigDialog()
+        {
+            SEChatGPTConfigScreen.Open();
         }
 
         public void Update()
@@ -24,6 +28,13 @@ namespace SEChatGPT
         public void Dispose()
         {
 
+        }
+
+
+        private void RunSetup()
+        {
+            // Initialize config
+            var configService = new ConfigService();
         }
     }
 
