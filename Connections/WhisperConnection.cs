@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace SEChatGPT.Connections
 {
-    internal class WhisperConnection
+    public  class WhisperConnection : BaseConnection
     {
+
     }
 }

@@ -254,9 +254,14 @@ namespace SEChatGPT.Config
 
     public class SEChatGPTConfigScreen : BaseScreen
     {
+        public BaseConfig activeConfig;
+        public BaseConfig tempConfig;
+
         public SEChatGPTConfigScreen() : base(size: new Vector2(1, 0.9f))
         {
-
+            //Grab config
+            activeConfig = ConfigService.ActiveConfig;
+            tempConfig = ConfigService.ActiveConfig.Clone();
         }
 
         public static void Open()
@@ -283,68 +288,153 @@ namespace SEChatGPT.Config
             Controls.Add(btnCancel);
             AddBarAbove(btnApply);
 
+            //Enable
             MyGuiControlLabel lblEnable = new MyGuiControlLabel(text: "SEChatGPT");
             PositionX(lblEnable, title, -GuiSpacing * 2, true);
-            PositionY(lblEnable, title, GuiSpacing * 5);
+            PositionY(lblEnable, title, GuiSpacing * 3);
             Controls.Add(lblEnable);
 
-            MyGuiControlOnOffSwitch cbEnable = new MyGuiControlOnOffSwitch(true);
+            MyGuiControlOnOffSwitch cbEnable = new MyGuiControlOnOffSwitch(activeConfig.Enabled);
+            cbEnable.Name = "cbEnable";
             PositionY(cbEnable, lblEnable, GuiSpacing * 3, true);
             PositionX(cbEnable, lblEnable, GuiSpacing * 2);
             Controls.Add(cbEnable);
-            
+
+
+            //API Keys
             MyGuiControlLabel lblGPTAPIKey = new MyGuiControlLabel(text: "GPT API Key");
-            PositionY(lblGPTAPIKey, cbEnable, GuiSpacing * 3, true);
-            PositionX(lblGPTAPIKey, cbEnable, -GuiSpacing * 1.8f);
+            PositionY(lblGPTAPIKey, cbEnable, GuiSpacing * 3.5f, true);
+            PositionX(lblGPTAPIKey, cbEnable, -GuiSpacing * 22f);
             Controls.Add(lblGPTAPIKey);
 
-            MyGuiControlTextbox tbGPTAPIKey = new MyGuiControlTextbox();
+            MyGuiControlTextbox tbGPTAPIKey = new MyGuiControlTextbox(null, activeConfig.GPTAPIKey);
+            tbGPTAPIKey.Name = "tbGPTAPIKey";
             PositionY(tbGPTAPIKey, lblGPTAPIKey, GuiSpacing * 2, true);
-            PositionX(tbGPTAPIKey, lblGPTAPIKey, GuiSpacing * 2.5f);
+            PositionX(tbGPTAPIKey, lblGPTAPIKey, GuiSpacing * 9f);
             Controls.Add(tbGPTAPIKey);
 
+            MyGuiControlLabel lblElevanLabsAPIKey = new MyGuiControlLabel(text: "ElevanLabs API Key");
+            PositionX(lblElevanLabsAPIKey, lblGPTAPIKey, GuiSpacing * 20, true);
+            Controls.Add(lblElevanLabsAPIKey);
+
+            MyGuiControlTextbox tbElevanLabsAPIKey = new MyGuiControlTextbox(null, activeConfig.ElevanLabsAPIKey);
+            tbElevanLabsAPIKey.Name = "tbElevanLabsAPIKey";
+            PositionY(tbElevanLabsAPIKey, lblElevanLabsAPIKey, GuiSpacing * 2, true);
+            PositionX(tbElevanLabsAPIKey, lblElevanLabsAPIKey, GuiSpacing * 9f);
+            Controls.Add(tbElevanLabsAPIKey);
+
+
+            //GPT Settings
             MyGuiControlLabel lblGPTModel = new MyGuiControlLabel(text: "GPT Model");
-            PositionY(lblGPTModel, tbGPTAPIKey, GuiSpacing * 3, true);
-            PositionX(lblGPTModel, tbGPTAPIKey, -GuiSpacing * 2);
+            PositionY(lblGPTModel, tbGPTAPIKey, GuiSpacing * 3.5f, true);
+            PositionX(lblGPTModel, tbGPTAPIKey, -GuiSpacing * 9);
             Controls.Add(lblGPTModel);
 
             MyGuiControlCombobox cbGPTModel = new MyGuiControlCombobox();
-            cbGPTModel.AddItem(0, "GPT-3");
-            cbGPTModel.AddItem(1, "GPT-4");
+            cbGPTModel.Name = "cbGPTModel";
+            cbGPTModel.SetMaxWidth(GuiSpacing * 8);
+            var modelNames = Enum.GetNames(typeof(GPTModel)).ToList();
+            for (int i = 0; i < modelNames.Count; i++)
+            {
+                cbGPTModel.AddItem(i, modelNames[i]);
+                if (activeConfig.GPTModel == (GPTModel)i)
+                {
+                    cbGPTModel.SelectItemByIndex(i);
+                }
+            }
             PositionY(cbGPTModel, lblGPTModel, GuiSpacing * 2.5f, true);
-            PositionX(cbGPTModel, lblGPTModel, GuiSpacing * 2);
+            PositionX(cbGPTModel, lblGPTModel, GuiSpacing * 4);
             Controls.Add(cbGPTModel);
 
             MyGuiControlLabel lblInputType = new MyGuiControlLabel(text: "Input Type");
-            PositionY(lblInputType, cbGPTModel, GuiSpacing * 3, true);
-            PositionX(lblInputType, cbGPTModel, -GuiSpacing * 2);
+            PositionX(lblInputType, lblGPTModel, GuiSpacing * 10, true);
             Controls.Add(lblInputType);
 
             MyGuiControlCombobox cbInputType = new MyGuiControlCombobox();
-            cbInputType.AddItem(0, "Text");
-            cbInputType.AddItem(1, "Voice");
+            cbInputType.Name = "cbInputType";
+            cbInputType.SetMaxWidth(GuiSpacing * 8);
+            var inputNames = Enum.GetNames(typeof(InputType)).ToList();
+            for (int i = 0; i < inputNames.Count; i++)
+            {
+                cbInputType.AddItem(i, inputNames[i]);
+                if (activeConfig.InputType == (InputType)i)
+                {
+                    cbInputType.SelectItemByIndex(i);
+                }
+            }
             PositionY(cbInputType, lblInputType, GuiSpacing * 2.5f, true);
-            PositionX(cbInputType, lblInputType, GuiSpacing * 2);
+            PositionX(cbInputType, lblInputType, GuiSpacing * 4);
             Controls.Add(cbInputType);
 
             MyGuiControlLabel lblOutputType = new MyGuiControlLabel(text: "Output Type");
-            PositionY(lblOutputType, cbInputType, GuiSpacing * 3, true);
-            PositionX(lblOutputType, cbInputType, -GuiSpacing * 2);
+            PositionX(lblOutputType, lblInputType, GuiSpacing * 10, true);
             Controls.Add(lblOutputType);
 
             MyGuiControlCombobox cbOutputType = new MyGuiControlCombobox();
-            cbOutputType.AddItem(0, "Text");
-            cbOutputType.AddItem(1, "Voice");
-            cbOutputType.AddItem(2, "Advanced Voice");
+            cbOutputType.Name = "cbOutputType";
+            cbOutputType.SetMaxWidth(GuiSpacing * 8);
+            var outputNames = Enum.GetNames(typeof(OutputType)).ToList();
+            for (int i = 0; i < outputNames.Count; i++)
+            {
+                cbOutputType.AddItem(i, outputNames[i]);
+                if (activeConfig.OutputType == (OutputType)i)
+                {
+                    cbOutputType.SelectItemByIndex(i);
+                }
+            }
             PositionY(cbOutputType, lblOutputType, GuiSpacing * 2.5f, true);
-            PositionX(cbOutputType, lblOutputType, GuiSpacing * 2);
+            PositionX(cbOutputType, lblOutputType, GuiSpacing * 4);
             Controls.Add(cbOutputType);
 
+            //Behaviour
+            MyGuiControlLabel lblBehaviour = new MyGuiControlLabel(text: "GPT Behaviour");
+            PositionY(lblBehaviour, cbGPTModel, GuiSpacing * 3.5f, true);
+            PositionX(lblBehaviour, cbGPTModel, -GuiSpacing * 4);
+            Controls.Add(lblBehaviour);
+
+            MyGuiControlMultilineEditableText tbBehaviour = new MyGuiControlMultilineEditableText(drawScrollbarV: true);
+            tbBehaviour.Name = "tbBehaviour";
+            tbBehaviour.Size = new Vector2(GuiSpacing * 44, GuiSpacing * 20);
+            tbBehaviour.TextWrap = true;
+            tbBehaviour.TextBoxAlign = MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_TOP;
+            tbBehaviour.TextPadding = new MyGuiBorderThickness(0.01f);
+            tbBehaviour.Text = new StringBuilder(activeConfig.GPTBehaviour);
+            PositionY(tbBehaviour, lblBehaviour, GuiSpacing * 11.5f, true);
+            PositionX(tbBehaviour, lblBehaviour, GuiSpacing * 22f);
+            Controls.Add(tbBehaviour);
         }
 
         private void OnApplyClick(MyGuiControlButton btn)
         {
-            //Apply settings
+            foreach (var control in Controls)
+            {
+                switch (control.Name)
+                {
+                    case "cbEnable":
+                        tempConfig.Enabled = ((MyGuiControlOnOffSwitch)control).Enabled;
+                        break;
+                    case "tbGPTAPIKey":
+                        tempConfig.GPTAPIKey = ((MyGuiControlTextbox)control).Text;
+                        break;
+                    case "tbElevanLabsAPIKey":
+                        tempConfig.ElevanLabsAPIKey = ((MyGuiControlTextbox)control).Text;
+                        break;
+                    case "cbGPTModel":
+                        tempConfig.GPTModel = (GPTModel)((MyGuiControlCombobox)control).GetSelectedIndex();
+                        break;
+                    case "cbInputType":
+                        tempConfig.InputType = (InputType)((MyGuiControlCombobox)control).GetSelectedIndex();
+                        break;
+                    case "cbOutputType":
+                        tempConfig.OutputType = (OutputType)((MyGuiControlCombobox)control).GetSelectedIndex();
+                        break;
+                    case "tbBehaviour":
+                        tempConfig.GPTBehaviour = ((MyGuiControlMultilineEditableText)control).Text.ToString();
+                        break;
+                }
+            }
+
+            ConfigService.Save(tempConfig);
             CloseScreen();
         }
 

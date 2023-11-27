@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SEChatGPT.Connections
 {
-    internal class ElevanLabsConnection
+    public class ElevanLabsConnection : BaseConnection
     {
     }
 }

@@ -1,32 +1,30 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.IO;
 
 namespace SEChatGPT.Config
 {
-    public class ConfigService
+    public static class ConfigService
     {
-        private readonly string defaultPath = Path.Combine(
+        private static string defaultPath = Path.Combine(
                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                "SpaceEngineers", "Storage", "SEChatGPT.cfg");
 
-        public BaseConfig ActiveConfig;
+        public static BaseConfig ActiveConfig;
 
-        public ConfigService()
+        public static void Save(BaseConfig config, string path = null)
         {
-            Load();
-        }
+            ActiveConfig = config.Clone();
 
-        public void Save(BaseConfig config, string path = null)
-        {
             if (string.IsNullOrEmpty(path))
                 path = defaultPath;
 
-            var jsonString = JsonConvert.SerializeObject(config, Formatting.Indented);
+            var jsonString = JsonConvert.SerializeObject(ActiveConfig, Formatting.Indented, new StringEnumConverter());
             File.WriteAllText(path, jsonString);
         }
 
-        public void Load(string path = null)
+        public static void Load(string path = null)
         {
             if (string.IsNullOrEmpty(path))
                 path = defaultPath;
@@ -40,7 +38,7 @@ namespace SEChatGPT.Config
             }
 
             var jsonString = File.ReadAllText(path);
-            ActiveConfig = JsonConvert.DeserializeObject<BaseConfig>(jsonString);
+            ActiveConfig = JsonConvert.DeserializeObject<BaseConfig>(jsonString, new StringEnumConverter());
         }
     }
 
@@ -77,9 +75,9 @@ namespace SEChatGPT.Config
         public string ElevanLabsAPIKey { get; set; }
 
         /// <summary>
-        /// Gets or sets the prompt for GPT.
+        /// Gets or sets the behaviour for GPT.
         /// </summary>
-        public string GPTPrompt { get; set; }
+        public string GPTBehaviour { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseConfig"/> class.
@@ -87,26 +85,40 @@ namespace SEChatGPT.Config
         public BaseConfig()
         {
             Enabled = true;
-            InputType = InputType.Voice;
-            OutputType = OutputType.BasicVoice;
+            InputType = InputType.Text;
+            OutputType = OutputType.Text;
             GPTModel = GPTModel.GPT3;
-            GPTAPIKey = "<GPT_API_KEY>";
-            ElevanLabsAPIKey = "<ELEVAN_LABS_API_KEY_OPTIONAL>";
-            GPTPrompt = "<GPT_PROMPT>";
+            GPTAPIKey = "";
+            ElevanLabsAPIKey = "";
+            GPTBehaviour = "You are a helpful assistant";
+        }
+
+        internal BaseConfig Clone()
+        {
+            return new BaseConfig()
+            {
+                Enabled = Enabled,
+                InputType = InputType,
+                OutputType = OutputType,
+                GPTModel = GPTModel,
+                GPTAPIKey = GPTAPIKey,
+                ElevanLabsAPIKey = ElevanLabsAPIKey,
+                GPTBehaviour = GPTBehaviour
+            };
         }
     }
 
     public enum InputType
     {
+        Text,
         Voice,
-        Text
     }
 
     public enum OutputType
     {
+        Text,
         BasicVoice,
         AdvancedVoice,
-        Text
     }
 
     public enum GPTModel

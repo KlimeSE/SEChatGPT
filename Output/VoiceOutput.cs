@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace SEChatGPT.Outputs
 {
-    internal class VoiceOutput
+    public class VoiceOutput : BaseOutput
     {
+
     }
 }
